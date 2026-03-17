@@ -1,0 +1,40 @@
+{# ============================================================
+   1-PORT ONU TEMPLATE (ZTE OLT)
+   Hybrid Mode / Service-Port on vport
+   ============================================================ #}
+
+conf t
+
+{# ------------------------------------------------------------
+   1. ONU REGISTRATION (PON LEVEL)
+   ------------------------------------------------------------ #}
+interface {{ port_name }}
+    onu {{ onu_id }} type {{ onu_type }} sn {{ sn_onu }}
+    onu {{ onu_id }} profile line {{ speed}}mb remote {{ vlan_name }}
+exit
+
+
+{# ------------------------------------------------------------
+   2. ONU SERVICE INTERFACE CONFIGURATION
+   ------------------------------------------------------------ #}
+interface {{ port_onu_name }}:{{ onu_id }}
+
+    {# --- Switching mode and VLAN binding --- #}
+    switchport mode hybrid vport 1
+    service-port 1 vport 1 user-vlan {{ vlan_id }} vlan {{ vlan_id }}
+
+    {# --- Security configuration --- #}
+    max-mac-learn 4
+    ip dhcp snooping enable vport 1
+    ip access-group 300 in vport 1
+
+    {# --- Device identification --- #}
+    name {{ comment }}
+    description {{ comment }}
+end
+
+
+{# ------------------------------------------------------------
+   3. SAVE CONFIGURATION
+   ------------------------------------------------------------ #}
+write

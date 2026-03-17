@@ -1,0 +1,6 @@
+Flask
+flask-cors
+PyYAML
+PyMySQL
+python-dotenv
+Jinja2

@@ -1,0 +1,59 @@
+{# ============================================================
+   ZTE GPON ONU TEMPLATE (Hybrid Mode / Single VLAN)
+   Based on new configuration model
+   ============================================================ #}
+
+{%- set after_dash = port_onu_name.split('-')|last %}
+{%- set portNumber = after_dash.split(':')|first %}
+{%- set ontName = 'gpon-onu_' ~ portNumber ~ ':' ~ onu_id %}
+
+conf t
+
+{# ------------------------------------------------------------
+   1. ONU REGISTRATION
+   ------------------------------------------------------------ #}
+interface {{ port_name }}
+    onu {{ onu_id }} type {{ onu_type }} sn {{ sn_onu }}
+exit
+
+
+{# ------------------------------------------------------------
+   2. ONU INTERFACE CONFIGURATION
+   ------------------------------------------------------------ #}
+interface {{ ontName }}
+    name {{ comment }}
+    description {{ comment }}
+
+    fec upstream
+
+    tcont 1 name T-INET profile UP-{{ speed }}Mb
+
+    gemport 1 unicast tcont 1 dir both
+    gemport 1 traffic-limit downstream DOWN-{{ speed }}Mb 
+
+    max-mac-learn 8 vport 1
+    switchport mode hybrid vport 1
+
+    service-port 1 vport 1 user-vlan {{ vlan_id }} vlan {{ vlan_id }}
+
+    ip access-group 300 in vport 1
+exit
+
+
+{# ------------------------------------------------------------
+   3. VLAN CONFIGURATION ON ONU
+   ------------------------------------------------------------ #}
+pon-onu-mng {{ ontName }}
+    service vlan{{ vlan_id }} gemport 1 cos 0 vlan {{ vlan_id }}
+
+    vlan port eth_0/1 mode tag vlan {{ vlan_id }}
+    vlan port eth_0/2 mode tag vlan {{ vlan_id }}
+    vlan port eth_0/3 mode tag vlan {{ vlan_id }}
+    vlan port eth_0/4 mode tag vlan {{ vlan_id }}
+exit
+
+
+{# ------------------------------------------------------------
+   4. SAVE CONFIGURATION
+   ------------------------------------------------------------ #}
+write

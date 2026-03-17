@@ -1,0 +1,62 @@
+{# ============================================================
+   1-PORT BRIDGE ONU TEMPLATE (ZTE XGPON-ONU)
+   Single VLAN / Single Service-Port / Pure Bridge Mode
+   ============================================================ #}
+
+{%- set after_dash = port_onu_name.split('-')|last %}
+{%- set portNumber = after_dash.split(':')|first %}
+{%- set ontName = 'gpon_onu-' ~ portNumber ~ ':' ~ onu_id %}
+
+conf t
+
+{# ------------------------------------------------------------
+   1. ONU REGISTRATION
+   ------------------------------------------------------------ #}
+interface {{ port_name }}
+    onu {{ onu_id }} type {{ onu_type }} sn {{ sn_onu }}
+exit
+
+
+{# ------------------------------------------------------------
+   2. T-CONT / GEMPORT CONFIGURATION
+   ------------------------------------------------------------ #}
+interface {{ ontName }}
+    fec enable
+    name {{ comment }}
+    description {{ comment }}
+
+    tcont 1 profile UP-{{ speed }}M
+    gemport 1 tcont 1
+exit
+
+
+{# ------------------------------------------------------------
+   3. BRIDGE VLAN CONFIGURATION (LAN PORT 1)
+   ------------------------------------------------------------ #}
+pon-onu-mng {{ ontName }}
+    service vlan{{ vlan_id }} gemport 1 vlan {{ vlan_id }}
+
+    vlan port eth_0/1 mode tag vlan {{ vlan_id }}
+    loop-detect ethuni eth_0/1 enable
+exit
+
+
+{# ------------------------------------------------------------
+   4. SERVICE-PORT (UPLINK TRAFFIC POLICY)
+   ------------------------------------------------------------ #}
+interface vport-{{ portNumber }}.{{ onu_id }}:1
+    service-port 1 user-vlan {{ vlan_id }} vlan {{ vlan_id }} egress DOWN-{{ speed }}M
+
+    security max-mac-learn 4
+    security vlan-stormcontrol broadcast vlan {{ vlan_id }} rate 150
+    security vlan-stormcontrol multicast vlan {{ vlan_id }} rate 30
+    security vlan-stormcontrol unknowncast vlan {{ vlan_id }} rate 20
+
+    ip access-group 300 in
+end
+
+
+{# ------------------------------------------------------------
+   5. SAVE CONFIGURATION
+   ------------------------------------------------------------ #}
+write

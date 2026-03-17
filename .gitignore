@@ -1,0 +1,14 @@
+# Файлы с секретами
+.env
+.env.local
+.env.*.local
+
+# YAML файлы (ОСТОРОЖНО, см. примечание ниже)
+*.yaml
+*.yml
+
+# Системные файлы
+.DS_Store
+node_modules/
+__pycache__/
+*.log
