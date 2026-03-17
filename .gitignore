@@ -2,7 +2,7 @@
 .env
 .env.local
 .env.*.local
-
+env/
 # YAML файлы (ОСТОРОЖНО, см. примечание ниже)
 *.yaml
 *.yml
