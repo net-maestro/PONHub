@@ -1,0 +1,136 @@
+# ============================================
+# КОНФИГУРАЦИЯ OLT ZTE
+# ============================================
+
+olts:
+  # --- OLT №1 ---
+  - id: 1
+    name: "ZTE C320 - Щасливий"
+    ip: "172.16.1.200"
+    login: ""
+    password: ""
+    timeout: 5
+    enabled: true
+    
+    # Типы ONU с количеством портов
+    onu_types:
+      F601:
+        model: "F601"
+        eth_ports: 1
+        has_wifi: false
+        description: "GPON"
+      MTU4:
+        model: "MTU4"
+        eth_ports: 4
+        has_wifi: false
+        description: "GPON"  
+      XGPONONU:
+        model: "XGPONONU"
+        eth_ports: 1
+        has_wifi: false
+        description: "XG-PON"
+    
+    # Доступные скорости (Mbps)
+    speeds:
+      - 50
+      - 100
+      - 500
+      - 1000
+    
+    # VLAN профили (name: vlan_id)
+    vlans:
+      # первая плата
+      rip: 200
+      GPON1111: 1111
+      GPON1113: 1113
+      GPON1115: 1115
+      # иторая плата
+      GPON1211: 1211
+      GPON1213: 1213
+      GPON1215: 1215
+      GPON1217: 1217
+   
+      
+    # Маппинг портов к рекомендуемым VLAN (КИЛЛЕР-ФИЧА)
+    port_vlan_mapping:
+      gpon-olt_1/1/1:  ["GPON1111", "200"]
+      gpon-olt_1/1/2:  ["GPON1111", "200"]
+      gpon-olt_1/1/3:  ["GPON1113", "200"]
+      gpon-olt_1/1/4:  ["GPON1113", "200"]
+      gpon-olt_1/1/5:  ["GPON1115", "200"]
+      # вторая плата
+      gpon-olt_1/2/1:  ["GPON1211", "200"]
+      gpon-olt_1/2/2:  ["GPON1211", "200"]
+      gpon-olt_1/2/3:  ["GPON1213", "200"]
+      gpon-olt_1/2/4:  ["GPON1213", "200"]
+      gpon-olt_1/2/5:  ["GPON1215", "200"]
+      gpon-olt_1/2/6:  ["GPON1215", "200"]
+      gpon-olt_1/2/7:  ["GPON1217", "200"]
+      gpon-olt_1/2/8:  ["GPON1217", "200"]
+     
+    
+    # Команды для OLT
+    commands:
+      terminal_length: "terminal length 0"
+      configure: "conf t"
+      show_uncfg: "show gpon onu uncfg"
+      show_running_interface: "show running-config interface"
+      show_onu_user_mac: "show mac gpon onu"
+      exit: "exit"
+      end: "end"
+      write: "write"
+
+  # --- OLT №2 ---
+  - id: 2
+    name: "ZTE C320 - Фейковий OLT"
+    ip: "172.16.1.201"
+    login: ""
+    password: ""
+    timeout: 5
+    enabled: false
+
+    onu_types:
+      F601:
+        model: "F601"
+        eth_ports: 1
+        has_wifi: false
+        description: "1 LAN порт"
+      F660:
+        model: "F660"
+        eth_ports: 4
+        has_wifi: true
+        description: "4 LAN + WiFi"
+    
+    speeds:
+      - 100
+      - 500
+      - 1000
+    
+    vlans:
+      INTERNET: 100
+      IPTV: 200
+      RIP: 200
+      GPON2111: 2111
+      GPON2113: 2113
+    
+    port_vlan_mapping:
+      gpon-olt_1/1/1: ["GPON2111", "RIP"]
+      gpon-olt_1/1/2: ["GPON2111", "RIP"]
+      gpon-olt_1/1/3: ["GPON2113", "RIP"]
+      gpon-olt_1/1/4: ["GPON2113", "RIP"]
+    
+    commands:
+      terminal_length: "terminal length 0"
+      configure: "conf t"
+      show_uncfg: "show gpon onu uncfg"
+      show_running: "show running-config interface"
+      show_onu_user_mac: "show mac interface"
+      exit: "exit"
+      end: "end"
+      write: "wr"
+
+# Настройки по умолчанию
+defaults:
+  max_onu_id: 128
+  default_timeout: 5
+  retry_count: 3
