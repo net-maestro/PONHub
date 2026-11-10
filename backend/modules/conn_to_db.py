@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Модуль подключения к базе данных биллинга"""
+"""Модуль подключения к базе данных биллинга conn_to_db.py"""
 import os
 import pymysql.cursors
 import pymysql
