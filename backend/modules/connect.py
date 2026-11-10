@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Модуль подключения к OLT по Telnet"""
+"""Модуль подключения к OLT по Telnet connect.py"""
 import time
 import telnetlib
 
