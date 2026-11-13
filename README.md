@@ -101,36 +101,38 @@
 
 ## 📡 Процесс регистрации ONU
 
+
 ```mermaid
 sequenceDiagram
-    participant U as Пользователь (Web UI)
+    participant U as Користувач (Web UI)
     participant F as Frontend (Vue.js)
     participant B as Backend (Flask API)
-    participant DB as Database (MySQL)
-    participant T as Templates (Jinja2)
-    participant OLT as Оборудование (ZTE OLT)
+    participant DB as База даних (MySQL)
+    participant T as Шаблони (Jinja2)
+    participant OLT as Обладнання (ZTE OLT)
 
-    U->>F: Ввод данных (SN, тип ONU, VLAN)
+    U->>F: Введення даних (SN, тип ONU, VLAN)
     F->>B: POST /api/preview-onu-config (JSON)
 
     rect rgb(240, 240, 240)
-        Note over B,DB: Этап обогащения данных
-        B->>DB: Запрос свободного IP
-        DB-->>B: Возврат IP
-        B->>B: Поиск свободного ONU ID (Telnet)
+        Note over B,DB: Етап збагачення даних
+        B->>DB: Запит вільної IP-адреси
+        DB-->>B: Повернення IP-адреси
+        B->>B: Пошук вільного ONU ID (Telnet)
     end
 
-    B->>T: Передача данных в шаблон
-    T-->>B: Сгенерированные CLI-команды
-    B-->>F: Конфиг для предпросмотра
+    B->>T: Передавання даних до шаблону
+    T-->>B: Згенеровані CLI-команди
+    B-->>F: Конфігурація для попереднього перегляду
 
-    U->>F: Подтверждение
+    U->>F: Підтвердження
     F->>B: POST /api/register-onu
 
-    B->>OLT: Отправка CLI (Telnet)
-    OLT-->>B: OK / Error
-    B-->>F: Статус операции
-    F-->>U: Уведомление пользователю
+    B->>OLT: Надсилання CLI-команд (Telnet)
+    OLT-->>B: OK / Помилка
+    B-->>F: Статус операції
+    F-->>U: Сповіщення користувача
+
 ```
 
 ---
